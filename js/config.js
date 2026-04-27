@@ -3,7 +3,7 @@
 // ==========================================
 
 // URL de tu backend local (Uvicorn)
-const API_URL = "https://turismo-api-j8v8.onrender.com";
+const API_URL = "https://api-turismo-aca.onrender.com";
 
 // Tip Senior: Si después subes tu backend de Render a la nube pública, 
 // solo comentas la línea de arriba y descomentas la de abajo con tu URL final:
