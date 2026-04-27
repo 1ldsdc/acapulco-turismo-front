@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acapulco Oficial - Turismo</title>
+    
+    <meta name="description" content="Descubre la riqueza natural y cultural del mejor puerto del mundo. Explora playas, gastronomía y cultura en Acapulco." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Acapulco Oficial - Turismo" />
+    <meta property="og:description" content="Descubre la riqueza natural y cultural del mejor puerto del mundo. Planifica tu viaje y vive Acapulco." />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1544550581-5f7ceaf7f992?w=1200" /> 
+    <meta property="og:url" content="https://turismo-acapulco.com" /> 
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Acapulco Oficial - Turismo" />
+    <meta name="twitter:description" content="Descubre la riqueza natural y cultural del mejor puerto del mundo. Planifica tu viaje y vive Acapulco." />
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1544550581-5f7ceaf7f992?w=1200" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="js/config.js"></script>
+    <script src="js/index.js" defer></script>
+    
+    <style>
+        :root { --guinda: #691C32; --dorado: #C19A6B; --gris-claro: #f0f2f5; --texto: #333333; }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { margin: 0; font-family: 'Montserrat', sans-serif; background-color: white; overflow-x: hidden; }
+
+        /* NAVBAR */
+        .navbar { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 0 4%; height: 85px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); position: fixed; width: 100%; top: 0; z-index: 2000; }
+        .logos-container { display: flex; align-items: center; gap: 15px; }
+        .logo-img { height: 50px; width: auto; transition: transform 0.3s; }
+        .nav-menu { display: flex; align-items: center; gap: 20px; }
+        .nav-link { text-decoration: none; color: var(--texto); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; transition: color 0.3s; cursor: pointer; }
+        .nav-link:hover { color: var(--guinda); }
+        .search-btn { background: #f0f0f0; width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--guinda) !important; cursor: pointer; transition: 0.3s; }
+        .search-btn:hover { background: var(--guinda); color: white !important; }
+        .hamburger { display: none; font-size: 1.5rem; cursor: pointer; }
+        
+        .mobile-menu { position: fixed; top: 85px; left: 0; width: 100%; background: white; padding: 20px; display: flex; flex-direction: column; gap: 15px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); transform: translateY(-150%); transition: transform 0.4s ease; z-index: 1900; }
+        .mobile-menu.active { transform: translateY(0); }
+        .mobile-menu a { text-decoration: none; color: var(--texto); font-weight: 700; text-transform: uppercase; padding: 10px; border-bottom: 1px solid #eee; }
+
+        /* MODAL BÚSQUEDA */
+        #search-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 3000; display: none; align-items: flex-start; justify-content: center; padding-top: 100px; animation: fadeIn 0.3s; }
+        .search-box { background: white; width: 90%; max-width: 600px; padding: 25px; border-radius: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); position: relative; }
+        .btn-close-search { position: absolute; top: 10px; right: 15px; color: #555; font-size: 2rem; cursor: pointer; line-height: 1; padding: 5px; }
+        .search-input-wrapper { display: flex; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 10px; }
+        .search-input-wrapper i { font-size: 1.2rem; color: #999; margin-right: 15px; }
+        #search-input { width: 100%; border: none; font-size: 1.2rem; outline: none; font-family: 'Montserrat'; font-weight: 600; }
+        #search-results { max-height: 400px; overflow-y: auto; margin-top: 15px; }
+        .result-item { display: flex; align-items: center; gap: 15px; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; text-decoration: none; color: inherit; }
+        .result-item:hover { background: #f9f9f9; }
+        .result-img { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; }
+        .result-info h4 { margin: 0; font-size: 0.95rem; color: var(--guinda); }
+        .result-info p { margin: 0; font-size: 0.8rem; color: #666; }
+
+        /* HERO & SLIDER */
+        .swiper { width: 100%; height: 100vh; margin-top: 0; }
+        .swiper-slide { background-size: cover; background-position: center; }
+        .hero-content { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); z-index: 10; width: 90%; text-align: center; display: flex; flex-direction: column; align-items: center; }
+        .welcome-text { font-size: 2.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 6px; color: white; margin-bottom: 15px; text-shadow: 2px 2px 0px #000, -2px -2px 0px #000, 2px -2px 0px #000, -2px 2px 0px #000, 0px 4px 10px rgba(0,0,0,0.8); }
+        .hero-logo-img { width: 100%; max-width: 600px; height: auto; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(255,255,255,0.4)); }
+        .hero-subtitle { font-size: 1.1rem; font-weight: 600; letter-spacing: 1px; color: #fff; max-width: 800px; text-shadow: 0 2px 10px rgba(0,0,0,0.9); background: rgba(0,0,0,0.4); padding: 12px 25px; border-radius: 50px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); }
+        .swiper-button-next, .swiper-button-prev { color: white !important; transform: scale(0.6); }
+
+        /* CLIMA & OCUPACIÓN */
+        .clima-strip { background: var(--guinda); color: white; text-align: center; padding: 15px; font-size: 1rem; font-weight: 600; letter-spacing: 1px; display: flex; justify-content: center; gap: 20px; align-items: center; flex-wrap: wrap; }
+        
+        /* SECCIONES IMÁGENES */
+        .section-gold { background-color: var(--dorado); padding: 80px 5%; display: flex; justify-content: center; }
+        .section-white { background-color: white; padding: 80px 5%; display: flex; justify-content: center; }
+        .section-gray { background-color: var(--gris-claro); padding: 60px 5% 100px 5%; border-top: 10px solid var(--guinda); }
+        .img-institucional { width: 100%; max-width: 1100px; height: auto; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.25); transition: 0.3s; }
+
+        /* CATEGORÍAS */
+        .section-header { text-align: center; margin-bottom: 3rem; }
+        .section-header h2 { color: var(--guinda); font-size: 2.8rem; text-transform: uppercase; font-weight: 900; margin-bottom: 10px; }
+        .grid-categorias { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; max-width: 1300px; margin: 0 auto; }
+        .card { height: 280px; border-radius: 15px; overflow: hidden; position: relative; box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: transform 0.3s; cursor: pointer; background: white; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+        .card img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s ease; }
+        .card-title { position: absolute; bottom: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); color: white; text-align: center; padding: 15px; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; }
+
+        /* FOOTER */
+        footer { background: var(--guinda); color: white; padding: 60px 5%; font-size: 0.9rem; }
+        .footer-container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; align-items: center; }
+        .footer-col-1 h4 { color: var(--dorado); text-transform: uppercase; margin-bottom: 15px; font-weight: 800; }
+        .img-contacto-footer { width: 100%; max-width: 320px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2); }
+        .footer-col-3 { display: flex; flex-direction: column; align-items: flex-end; gap: 15px; text-align: right; }
+        .btn-pdf { background: rgba(255,255,255,0.1); border: 1px solid white; color: white; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 0.8rem; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-pdf:hover { background: white; color: var(--guinda); }
+        .social-icons { display: flex; gap: 15px; font-size: 1.5rem; }
+        .social-icons a { color: white; opacity: 0.8; transition: opacity 0.3s; }
+        .copyright { text-align: center; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 40px; padding-top: 20px; font-size: 0.75rem; opacity: 0.6; }
+
+        /* BOTONES IDIOMA */
+        .lang-btn { font-weight: 700; font-size: 0.8rem; cursor: pointer; color: #666; transition: 0.3s; display: flex; align-items: center; gap: 5px; }
+        .lang-btn:hover { color: var(--guinda); transform: scale(1.1); }
+        iframe.skiptranslate { display: none !important; visibility: hidden !important; }
+        body { top: 0px !important; position: static !important; }
+        html { margin-top: 0px !important; }
+        #google_translate_element { display: none !important; }
+        .goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
+
+        /* ANIMACIONES AL BAJAR */
+        .reveal { opacity: 0; transform: translateY(60px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        @keyframes pulse_latido { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* NEWSLETTER */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 4000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.4s ease; }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .modal-content { background: white; border-radius: 15px; width: 90%; max-width: 450px; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.3); transform: scale(0.8) translateY(50px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-top: 6px solid var(--guinda); overflow: hidden; }
+        .modal-overlay.show .modal-content { transform: scale(1) translateY(0); }
+        .close-modal { position: absolute; top: 10px; right: 15px; font-size: 2rem; color: #999; cursor: pointer; transition: 0.2s; line-height: 1; }
+        .close-modal:hover { color: var(--guinda); }
+        .modal-body { padding: 40px 30px; text-align: center; }
+        .modal-logo { width: 120px; height: auto; margin-bottom: 20px; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+        /* CHATBOT PREMIUM */
+        .chat-fab { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: var(--dorado); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; box-shadow: 0 10px 20px rgba(0,0,0,0.3); cursor: pointer; z-index: 3900; transition: transform 0.3s; animation: pulse_latido 2s infinite; }
+        .chat-fab:hover { transform: scale(1.1); background: var(--guinda); }
+        .chat-window { position: fixed; bottom: 100px; right: 30px; width: 350px; height: 500px; background: white; border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.2); display: flex; flex-direction: column; z-index: 3900; overflow: hidden; transform: translateY(20px); opacity: 0; pointer-events: none; transition: all 0.3s ease; border: 1px solid #eee; }
+        .chat-window.active { transform: translateY(0); opacity: 1; pointer-events: all; }
+        .chat-header { background: var(--guinda); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--dorado); }
+        .chat-bot-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; }
+        .chat-body { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #f9f9f9; font-size: 0.9rem; }
+        .chat-body::-webkit-scrollbar { width: 6px; }
+        .chat-body::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        .mensaje { max-width: 80%; padding: 10px 15px; border-radius: 15px; line-height: 1.4; animation: fadeIn 0.3s; }
+        .mensaje.bot { background: white; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .mensaje.user { background: var(--dorado); color: white; align-self: flex-end; border-bottom-right-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .chat-footer { display: flex; padding: 10px; background: white; border-top: 1px solid #eee; }
+        .chat-footer input { flex-grow: 1; border: none; padding: 10px; outline: none; font-family: 'Montserrat'; border-radius: 20px; background: #f0f0f0; margin-right: 10px; }
+        .chat-footer button { background: var(--guinda); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: 0.2s; }
+        .chat-footer button:hover { background: #4a1220; }
+        .escribiendo { font-style: italic; color: #888; font-size: 0.8rem; align-self: flex-start; margin-left: 10px; display: none; }
+
+        /* ESTILOS BOTÓN VOLVER ARRIBA */
+        .btn-up { position: fixed; bottom: 30px; right: 110px; width: 50px; height: 50px; background: rgba(105, 28, 50, 0.85); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 3800; opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.3s ease; backdrop-filter: blur(5px); }
+        .btn-up.show { opacity: 1; visibility: visible; transform: translateY(0); }
+        .btn-up:hover { background: var(--dorado); transform: translateY(-5px); }
+
+        @media (max-width: 900px) {
+            .footer-container { grid-template-columns: 1fr; text-align: center; gap: 30px; }
+            .footer-col-3 { align-items: center; }
+            .navbar { padding: 0 20px; } .nav-menu { display: none; } .hamburger { display: block; }
+            .hero-logo-img { max-width: 85%; } .welcome-text { font-size: 1.2rem; }
+            .section-gold, .section-white, .section-gray { padding: 40px 5%; }
+            .chat-window { width: 90%; right: 5%; bottom: 100px; height: 60vh; }
+            .btn-up { right: 5%; bottom: 100px; width: 40px; height: 40px; font-size: 1.2rem; }
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div id="panel-carga-global" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: white; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease, visibility 0.5s ease;">
+        <img src="img/logo_turismo.png" alt="Cargando Acapulco" class="loader-logo-pulse notranslate" style="width: 60px; height: auto; margin-bottom: 20px; animation: pulse_latido 1.5s infinite ease-in-out;">
+        <div class="cargando-texto-premium" id="texto-carga-premium" style="font-family: 'Montserrat', sans-serif; font-weight: 800; color: var(--guinda); font-size: 1.2rem; text-transform: uppercase; letter-spacing: 3px;">
+            Cargando...
+        </div>
+    </div>
+    
+    <div id="search-overlay">
+        <div class="search-box">
+            <div class="btn-close-search" onclick="cerrarBusqueda()">×</div>
+            <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="¿Qué buscas? (Ej: Playa, Museo...)" autofocus>
+            </div>
+            <div id="search-results"></div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logos-container">
+            <img id="vista-logo-gobierno" src="img/logo_gobierno.png" alt="Gobierno" class="logo-img notranslate">
+        </div>
+        <div class="nav-menu">
+            <a href="#" class="nav-link">Inicio</a>
+            <a href="#seccion-gobierno" class="nav-link">Gobierno</a>
+            <a href="#vive-acapulco" class="nav-link">Turismo</a>
+            <a href="planifica.html" class="nav-link">Planifica tu viaje</a>
+            <a href="https://www.google.com/maps/place/Acapulco" target="_blank" class="nav-link">Mapa Digital</a>
+            <a href="#contacto" class="nav-link">Contacto</a>
+            <div class="search-btn" onclick="abrirBusqueda()"><i class="fas fa-search"></i></div>
+            
+            <div class="lang-selector" style="display: flex; gap: 15px; margin-left: 20px; border-left: 2px solid #eee; padding-left: 20px; align-items: center;">
+                <span class="lang-btn" onclick="cambiarIdiomaMagico('es')">🇲🇽 ES</span>
+                <span class="lang-btn" onclick="cambiarIdiomaMagico('en')">🇺🇸 EN</span>
+                <span class="lang-btn" onclick="cambiarIdiomaMagico('fr')">🇫🇷 FR</span>
+            </div>
+        </div>
+        <div class="hamburger" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#" onclick="toggleMenu()">Inicio</a>
+        <a href="#seccion-gobierno" onclick="toggleMenu()">Gobierno</a>
+        <a href="#vive-acapulco" onclick="toggleMenu()">Turismo</a>
+        <a href="planifica.html" onclick="toggleMenu()">Planifica tu viaje</a>
+        <a href="#" onclick="toggleMenu(); abrirBusqueda()">Buscar <i class="fas fa-search"></i></a>
+        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 10px; border-top: 1px solid #eee; padding-top: 15px;">
+            <span class="lang-btn" onclick="toggleMenu(); cambiarIdiomaMagico('es')">🇲🇽 ES</span>
+            <span class="lang-btn" onclick="toggleMenu(); cambiarIdiomaMagico('en')">🇺🇸 EN</span>
+            <span class="lang-btn" onclick="toggleMenu(); cambiarIdiomaMagico('fr')">🇫🇷 FR</span>
+        </div>
+    </div>
+
+    <div class="swiper mySwiper" id="vista-slider-principal">
+        <div class="swiper-wrapper" id="slider-wrapper">
+            <div class="swiper-slide" style="background-image: url('img/slider1.jpg');"></div>
+        </div>
+        <div class="hero-content">
+            <div class="welcome-text" id="vista-bienvenida">Bienvenido a</div>
+            <img src="img/tipografia.png" alt="Acapulco" class="hero-logo-img notranslate" id="vista-logo-transparente">
+            <div class="hero-subtitle" id="vista-subtitulo">Descubre la riqueza natural y cultural del mejor puerto del mundo.</div>
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+
+    <div class="clima-strip">
+        <span><i class="fas fa-sun"></i> Clima Actual: <span id="temp-actual">--°C</span> <span id="temp-desc">Cargando...</span></span>
+        <span id="vista-ocupacion" style="color: var(--dorado); font-weight: 800; font-size: 1.1rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);"></span>
+    </div>
+
+    <section id="seccion-gobierno" class="section-gold reveal">
+        <img src="img/presidenta.png" alt="Mensaje Presidenta" class="img-institucional" id="img-presidenta" loading="lazy">
+    </section>
+
+    <section class="section-white reveal">
+        <img src="img/oferta.png" alt="Oferta Turística" class="img-institucional" id="vista-oferta" loading="lazy">
+    </section>
+
+    <section class="section-gray" id="vive-acapulco">
+        <div class="section-header reveal">
+            <h2>Vive Acapulco</h2>
+            <p style="color:#666; font-size:1.1rem;">Explora nuestros segmentos turísticos</p>
+        </div>
+
+        <div class="grid-categorias">
+            <a href="lugares.html?cat=1" class="card reveal"><img id="img-cat-1" class="notranslate" src="https://images.unsplash.com/photo-1544550581-5f7ceaf7f992?w=600" loading="lazy"><div class="card-title">Naturaleza y Ecoturismo</div></a>
+            <a href="lugares.html?cat=2" class="card reveal"><img id="img-cat-2" class="notranslate" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600" loading="lazy"><div class="card-title">Playas</div></a>
+            <a href="lugares.html?cat=3" class="card reveal"><img id="img-cat-3" class="notranslate" src="https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?w=600" loading="lazy"><div class="card-title">Cultura y Museos</div></a>
+            <a href="lugares.html?cat=4" class="card reveal"><img id="img-cat-4" class="notranslate" src="https://expresionmexico.com/wp-content/uploads/2022/04/acapu.jpg" loading="lazy"><div class="card-title">Gastronomía</div></a>
+            <a href="lugares.html?cat=5" class="card reveal"><img id="img-cat-5" class="notranslate" src="https://images.unsplash.com/photo-1596436889106-be35e843f974?w=600" loading="lazy"><div class="card-title">Atractivos Turísticos</div></a>
+            <a href="lugares.html?cat=6" class="card reveal"><img id="img-cat-6" class="notranslate" src="https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=600" loading="lazy"><div class="card-title">Beach Clubs</div></a>
+            <a href="lugares.html?cat=7" class="card reveal"><img id="img-cat-7" class="notranslate" src="https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=600" loading="lazy"><div class="card-title">Vida Nocturna</div></a>
+            <a href="lugares.html?cat=8" class="card reveal"><img id="img-cat-8" class="notranslate" src="https://images.unsplash.com/photo-1566373703901-707645851493?w=600" loading="lazy"><div class="card-title">Servicios Náuticos</div></a>
+            <a href="lugares.html?cat=9" class="card reveal"><img id="img-cat-9" class="notranslate" src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600" loading="lazy"><div class="card-title">Hotel Boutique</div></a>
+            <a href="lugares.html?cat=10" class="card reveal"><img id="img-cat-10" class="notranslate" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Catedral_de_Acapulco.jpg/640px-Catedral_de_Acapulco.jpg" loading="lazy"><div class="card-title">Iglesias</div></a>
+        </div>
+    </section>
+
+    <footer id="contacto">
+        <div class="footer-container">
+            <div class="footer-col-1">
+                <h4>Secretaría de Turismo</h4>
+                <p>Edificio La Cuchilla, Calle Vasco de Gama s/n,<br>2do piso lado A, Fracc: Costa Azul, C.P. 39830<br>Acapulco de Juárez, Guerrero.</p>
+                <p><i class="fas fa-phone-alt" style="color:var(--dorado)"></i> 744 440 7000</p>
+            </div>
+            <div class="footer-col-2"><img src="img/contacto.png" alt="Emergencias" class="img-contacto-footer notranslate" loading="lazy"></div>
+            <div class="footer-col-3">
+                <a href="guia.pdf" class="btn-pdf" download><i class="fas fa-file-pdf"></i> Descargar Guía PDF</a>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">© 2026 Gobierno Municipal de Acapulco de Juárez - Todos los derechos reservados.</div>
+    </footer>
+
+    <div id="newsletter-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="cerrarNewsletter()">×</span>
+            <div class="modal-body">
+                <img src="img/logo_turismo.png" alt="Acapulco" class="modal-logo notranslate">
+                <h2 style="color: var(--guinda); margin-bottom: 10px; font-weight: 900; text-transform: uppercase;">¡Sé parte de la historia!</h2>
+                <p style="color: #555; margin-bottom: 20px; font-size: 0.95rem;">Únete a nuestro boletín oficial y entérate antes que nadie de los mejores eventos, aperturas y secretos de Acapulco.</p>
+                
+                <form onsubmit="suscribirNewsletter(event)" style="display: flex; flex-direction: column; gap: 15px;">
+                    <input type="email" id="email-news" placeholder="Tu correo electrónico" required style="padding: 12px; border: 2px solid #eee; border-radius: 8px; font-family: 'Montserrat'; outline: none;">
+                    <button type="submit" style="background: var(--dorado); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; font-family: 'Montserrat';">¡Quiero unirme!</button>
+                </form>
+                <div id="news-exito" style="display:none; color: green; font-weight: bold; margin-top: 15px; padding: 10px; background: #e6ffe6; border-radius: 8px;">
+                    ¡Gracias por suscribirte! Te mantendremos informado.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="btn-volver-arriba" class="btn-up notranslate" onclick="volverArriba()">
+        <i class="fas fa-chevron-up"></i>
+    </div>
+
+    <div id="chat-fab" class="chat-fab notranslate" onclick="toggleChat()">
+        <i class="fas fa-comment-dots"></i>
+    </div>
+
+    <div id="chat-window" class="chat-window">
+        <div class="chat-header">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="img/logo_turismo.png" alt="Bot" class="chat-bot-avatar notranslate" loading="lazy">
+                <div>
+                    <h4 style="margin: 0; font-size: 1rem; color: white;">AcaBot Inteligente</h4>
+                    <span style="font-size: 0.7rem; color: #ffd700;">En línea</span>
+                </div>
+            </div>
+            <i class="fas fa-times" style="cursor: pointer; font-size: 1.2rem;" onclick="toggleChat()"></i>
+        </div>
+        
+        <div class="chat-body" id="chat-cuerpo">
+            <div class="mensaje bot">
+                ¡Hola! Soy el asistente turístico oficial del H. Ayuntamiento. Conozco los lugares cerca de ti y qué es lo mejor de Acapulco. ¿Qué andas buscando hoy?
+            </div>
+        </div>
+        
+        <div class="chat-footer">
+            <input type="text" id="chat-input" placeholder="Pregúntame algo..." onkeypress="manejarEnter(event)">
+            <button onclick="enviarMensajeChat()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({ pageLanguage: 'es', includedLanguages: 'es,en,fr', autoDisplay: false }, 'google_translate_element');
+        }
+
+        function cambiarIdiomaMagico(lang) {
+            const loader = document.getElementById('panel-carga-global');
+            const textoLoader = document.getElementById('texto-carga-premium');
+            loader.style.visibility = 'visible';
+            loader.style.opacity = '1';
+
+            if(lang === 'en') textoLoader.innerText = "Translating...";
+            else if(lang === 'fr') textoLoader.innerText = "Traduction...";
+            else textoLoader.innerText = "Traduciendo...";
+
+            var selectField = document.querySelector("#google_translate_element select");
+            if(selectField) {
+                selectField.value = lang;
+                selectField.dispatchEvent(new Event('change'));
+            }
+
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => { loader.style.visibility = 'hidden'; }, 500);
+            }, 1500);
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('panel-carga-global');
+                if(loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); }
+            }, 800);
+        });
+
+        function toggleChat() {
+            document.getElementById('chat-window').classList.toggle('active');
+        }
+
+        function manejarEnter(e) {
+            if (e.key === 'Enter') enviarMensajeChat();
+        }
+
+        async function enviarMensajeChat() {
+            const input = document.getElementById('chat-input');
+            const textoMensaje = input.value.trim();
+            if (textoMensaje === '') return;
+
+            const chatCuerpo = document.getElementById('chat-cuerpo');
+            chatCuerpo.innerHTML += `<div class="mensaje user">${textoMensaje}</div>`;
+            input.value = '';
+            chatCuerpo.scrollTop = chatCuerpo.scrollHeight;
+
+            const escribiendo = document.createElement('div');
+            escribiendo.className = 'escribiendo';
+            escribiendo.id = 'indicador-escribiendo';
+            escribiendo.innerText = 'AcaBot está pensando...';
+            chatCuerpo.appendChild(escribiendo);
+            escribiendo.style.display = 'block';
+            chatCuerpo.scrollTop = chatCuerpo.scrollHeight;
+
+            try {
+                const response = await fetch(`${API_URL}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        mensaje: textoMensaje,
+                        lugares_contexto: typeof allPlaces !== 'undefined' ? allPlaces.map(l => ({ nombre: l.name, desc: l.description, cat: l.category })) : []
+                    })
+                });
+
+                const data = await response.json();
+                escribiendo.remove(); 
+
+                if(data.respuesta) {
+                    chatCuerpo.innerHTML += `<div class="mensaje bot">${data.respuesta}</div>`;
+                } else {
+                    chatCuerpo.innerHTML += `<div class="mensaje bot">Ahorita ando un poco saturado, intenta de nuevo. 🌴</div>`;
+                }
+                
+            } catch (error) {
+                console.error("Error en el chat:", error);
+                escribiendo.remove();
+                chatCuerpo.innerHTML += `<div class="mensaje bot">Ocurrió un error de conexión con el cerebro del bot. Verifica tu backend. 🔌</div>`;
+            }
+
+            chatCuerpo.scrollTop = chatCuerpo.scrollHeight; 
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panel de Control - Turismo Guerrero</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="js/config.js"></script>
+    <script src="js/admin.js" defer></script>
+    <style>
+        /* --- ESTILO SAGRADO (TU DISEÑO ORIGINAL) --- */
+        :root { --guinda: #691C32; --dorado: #B38E5D; --bg-body: #f3f4f6; --texto: #1f2937; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Montserrat', sans-serif; margin: 0; background-color: var(--bg-body); color: var(--texto); overflow-x: hidden; }
+
+        /* LOGIN */
+        #login-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-body); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 20px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; border-top: 6px solid var(--guinda); }
+
+        /* DASHBOARD */
+        #dashboard { display: none; min-height: 100vh; flex-direction: column; }
+        .navbar { background: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+        .brand { font-weight: 800; color: var(--guinda); font-size: 1.2rem; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+        .btn-nav { border: none; background: none; font-weight: 600; cursor: pointer; color: #666; font-size: 0.8rem; text-transform: uppercase; transition:0.3s; }
+        .btn-nav:hover { color: var(--guinda); }
+
+        /* LAYOUT */
+        .main-container { 
+            max-width: 1600px; margin: 0 auto; padding: 30px; 
+            display: grid; grid-template-columns: 450px 1fr; /* TU COLUMNA ORIGINAL */
+            gap: 30px; align-items: start; 
+        }
+
+        /* PESTAÑAS */
+        .tab-container { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { 
+            flex: 1; padding: 12px; border: none; border-radius: 8px; 
+            font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; 
+            background: white; color: #555; box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+            transition: 0.3s; min-width: 100px;
+        }
+        .tab-btn:hover { background: #f9f9f9; }
+        .tab-btn.active { 
+            background: var(--guinda); color: white; 
+            box-shadow: 0 5px 15px rgba(105, 28, 50, 0.3); transform: translateY(-2px);
+        }
+
+        /* FORMULARIO */
+        .form-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: sticky; top: 90px; z-index: 100; border: 2px solid transparent; display: none; }
+        .form-card.visible { display: block; animation: fadeIn 0.3s; }
+        
+        .form-card.modo-edicion { background-color: #fffbf0; border-color: var(--dorado); box-shadow: 0 0 20px rgba(179, 142, 93, 0.2); }
+        .form-title { font-size: 1.1rem; font-weight: 800; color: var(--guinda); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 2px solid #f3f4f6; padding-bottom: 10px; }
+        #aviso-edicion { display: none; background: var(--dorado); color: white; padding: 10px; border-radius: 6px; text-align: center; font-weight: bold; margin-bottom: 15px; }
+
+        /* DISEÑO WEB INFO */
+        .design-info { background: #f0f9ff; color: #0369a1; padding: 15px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px; border: 1px solid #bae6fd; line-height: 1.5; }
+
+        label { display: block; font-size: 0.75rem; font-weight: 600; color: #555; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-family: inherit; font-size: 0.9rem; background: #fafafa; }
+        input:focus { outline: none; border-color: var(--guinda); background: white; }
+
+        /* UPLOADERS */
+        .seccion-foto { border: 1px solid #eee; background: #fdfdfd; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .seccion-titulo { display: block; font-weight: 800; color: var(--guinda); font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; }
+        
+        .upload-row { display: flex; gap: 5px; align-items: center; margin-bottom: 10px; }
+        .upload-row input[type="text"] { flex: 1; margin-bottom: 0; width: 100%; }
+        
+        .btn-mini-upload { 
+            background: #333; color: white; border: none; padding: 0 15px; height: 42px; 
+            border-radius: 6px; cursor: pointer; font-size: 0.9rem; white-space: nowrap; 
+            display: flex; align-items: center; justify-content: center; gap: 5px; 
+            flex-grow: 0; 
+        }
+        .btn-mini-upload:hover { background: #000; transform: translateY(-2px); }
+
+        #preview-portada { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; display: none; border: 2px solid #ddd; }
+        
+        /* GRID GALERÍA */
+        .gallery-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .thumb-box { width: 70px; height: 70px; position: relative; border-radius: 6px; overflow: hidden; border: 1px solid #ccc; flex-shrink: 0; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
+        .btn-remove { position: absolute; top: 0; right: 0; background: red; color: white; border: none; width: 20px; height: 20px; cursor: pointer; font-size: 12px; display: flex; justify-content: center; align-items: center; }
+
+        #mapa-selector { height: 250px; width: 100%; border-radius: 8px; border: 2px solid #ddd; margin-top: 5px; cursor: crosshair; }
+        .coord-box { background: #eee; text-align: center; color: #555; pointer-events: none; width: 100%; }
+
+        /* BOTONES ACCIÓN */
+        .btn-submit { width: 100%; padding: 15px; margin-top: 20px; border: none; border-radius: 6px; background-color: var(--guinda); color: white; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn-submit:hover { background-color: #7c1c3a; }
+        .btn-submit.btn-update { background-color: var(--dorado); }
+        .btn-cancel { background-color: #e5e7eb; color: #374151; margin-top: 10px; display: none; width: 100%; border: none; padding: 12px; border-radius: 6px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+
+        /* INVENTARIO */
+        .filter-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; border-bottom: 1px solid #eee; }
+        .filter-btn { background: white; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; color: #555; transition: 0.2s; }
+        .filter-btn:hover { background: #f0f0f0; }
+        .filter-btn.active { background: var(--guinda); color: white; border-color: var(--guinda); }
+
+        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .item-card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; border: 1px solid #eee; transition: transform 0.2s; }
+        .item-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .item-img-box { height: 140px; overflow: hidden; position: relative; background: #eee; }
+        .item-img { width: 100%; height: 100%; object-fit: cover; }
+        .item-content { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+        .item-title { margin: 0 0 5px 0; font-size: 1rem; color: var(--guinda); font-weight: 700; }
+        .item-desc { font-size: 0.8rem; color: #666; margin-bottom: 10px; flex-grow: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .item-actions { display: flex; gap: 10px; padding-top: 10px; border-top: 1px solid #eee; }
+        .action-btn { flex: 1; padding: 8px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.8rem; transition: 0.2s; }
+        .btn-edit-card { background: #eff6ff; color: #1d4ed8; }
+        .btn-edit-card:hover { background: #dbeafe; }
+        .btn-delete-card { background: #fef2f2; color: #b91c1c; }
+        .btn-delete-card:hover { background: #fee2e2; }
+
+        .category-section { margin-bottom: 40px; display: block; animation: fadeIn 0.5s; }
+        .section-header { display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #ddd; padding-bottom: 10px; margin-bottom: 15px; }
+        .section-title { margin: 0; font-size: 1.3rem; color: var(--texto); }
+        .section-count { background: #eee; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) { 
+            .navbar { padding: 10px 20px; } .brand { font-size: 1rem; }
+            .main-container { display: flex; flex-direction: column; padding: 15px; gap: 20px; } 
+            .form-card { position: relative; top: 0; width: 100%; margin-bottom: 20px; order: 1; } 
+            .btn-mini-upload, .btn-submit, .action-btn { padding: 14px; font-size: 1rem; }
+            .upload-row { flex-wrap: wrap; }
+            .upload-row input[type="text"] { width: 100%; flex-basis: 100%; margin-bottom: 10px; }
+            .btn-mini-upload { flex-grow: 1; width: 100%; }
+            .items-grid { grid-template-columns: 1fr; } 
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-view">
+        <div class="login-card">
+            <h2 style="color:var(--guinda); margin-bottom: 30px;">PANEL ADMIN</h2>
+            <form onsubmit="hacerLogin(event)" style="text-align:left;">
+                <label>Usuario</label><input type="email" id="email" required>
+                <label>Contraseña</label><input type="password" id="password" required>
+                <button class="btn-submit" type="submit">ENTRAR</button>
+            </form>
+            <p id="error-msg" style="color:red; display:none; font-weight:bold; margin-top:15px;">Datos incorrectos</p>
+        </div>
+    </div>
+
+    <div id="dashboard">
+        <div class="navbar">
+            <div class="brand"><i class="fas fa-cogs"></i> Panel de Turismo</div>
+            <button onclick="cerrarSesion()" class="btn-nav"><i class="fas fa-sign-out-alt"></i> SALIR</button>
+        </div>
+
+        <div class="main-container">
+            
+            <div>
+                <div class="tab-container">
+                    <button id="tab-lugares" class="tab-btn active" onclick="cambiarPestana('lugares', this)"><i class="fas fa-map-marker-alt"></i> Lugares</button>
+                    <button id="tab-inicio" class="tab-btn" onclick="cambiarPestana('inicio', this)"><i class="fas fa-home"></i> Inicio Web</button>
+                    <button id="tab-categorias" class="tab-btn" onclick="cambiarPestana('categorias', this)"><i class="fas fa-plus"></i> Categorías</button>
+                    <button id="tab-diseno" class="tab-btn" onclick="cambiarPestana('diseno', this)"><i class="fas fa-image"></i> Diseño</button>
+                    <button id="tab-usuarios" class="tab-btn" onclick="cambiarPestana('usuarios', this)"><i class="fas fa-users"></i> Usuarios</button>
+                </div>
+
+                <div class="form-card" id="form-inicio">
+                    <h3 class="form-title" style="color:#0369a1;"><i class="fas fa-laptop-house"></i> Configurar Inicio</h3>
+                    <div class="design-info">
+                        Edita los textos de bienvenida, la ocupación hotelera y las 3 imágenes principales de la página principal (Home).
+                    </div>
+
+                    <form onsubmit="procesarInicio(event)">
+                        <label>Texto Principal (Letras grandes)</label>
+                        <input type="text" id="inicio-bienvenida" placeholder="Ej: Bienvenido a Acapulco">
+
+                        <label>Subtítulo del Banner (Debajo del logo)</label>
+                        <textarea id="inicio-subtitulo" rows="2" placeholder="Ej: Descubre la riqueza natural y cultural..."></textarea>
+
+                        <label>Ocupación Hotelera (%)</label>
+                        <input type="number" id="inicio-ocupacion" placeholder="Ej: 85" min="0" max="100">
+
+                        <div class="seccion-foto" style="margin-top:15px;">
+                            <span class="seccion-titulo">📸 Foto 1: Fondo Principal</span>
+                            <div class="upload-row">
+                                <input type="text" id="url-inicio-fondo" placeholder="URL o subir ->">
+                                <button type="button" class="btn-mini-upload" onclick="document.getElementById('file-inicio-fondo').click()">
+                                    <i class="fas fa-upload"></i> Subir
+                                </button>
+                                <input type="file" id="file-inicio-fondo" hidden accept="image/*" onchange="subirImagenExtra('inicio-fondo')">
+                            </div>
+                            <span id="status-inicio-fondo" style="font-size:0.7rem; font-weight:bold; color:green;"></span>
+                        </div>
+
+                        <div class="seccion-foto">
+                            <span class="seccion-titulo">🖼️ Foto 2: Logo</span>
+                            <div class="upload-row">
+                                <input type="text" id="url-inicio-logo" placeholder="URL o subir ->">
+                                <button type="button" class="btn-mini-upload" onclick="document.getElementById('file-inicio-logo').click()">
+                                    <i class="fas fa-upload"></i> Subir
+                                </button>
+                                <input type="file" id="file-inicio-logo" hidden accept="image/*" onchange="subirImagenExtra('inicio-logo')">
+                            </div>
+                            <span id="status-inicio-logo" style="font-size:0.7rem; font-weight:bold; color:green;"></span>
+                        </div>
+
+                        <div class="seccion-foto">
+                            <span class="seccion-titulo">🏷️ Foto 3: Oferta / Promoción</span>
+                            <div class="upload-row">
+                                <input type="text" id="url-inicio-oferta" placeholder="URL o subir ->">
+                                <button type="button" class="btn-mini-upload" onclick="document.getElementById('file-inicio-oferta').click()">
+                                    <i class="fas fa-upload"></i> Subir
+                                </button>
+                                <input type="file" id="file-inicio-oferta" hidden accept="image/*" onchange="subirImagenExtra('inicio-oferta')">
+                            </div>
+                            <span id="status-inicio-oferta" style="font-size:0.7rem; font-weight:bold; color:green;"></span>
+                        </div>
+
+                        <button type="submit" class="btn-submit" style="background-color:#0369a1;">GUARDAR INICIO</button>
+                    </form>
+                </div>
+
+                <div class="form-card visible" id="form-lugares">
+                    <div id="aviso-edicion">⚠️ MODO EDICIÓN</div>
+                    <h3 class="form-title" id="form-title"><i class="fas fa-plus-circle"></i> Nuevo Destino</h3>
+
+                    <form onsubmit="procesarLugar(event)">
+                        <input type="hidden" id="id-lugar">
+                        <label>Nombre del Lugar</label>
+                        <input type="text" id="nombre" placeholder="Ej: La Quebrada" required>
+
+                        <label>Categoría</label>
+                        <select id="categoria" required onchange="verificarGastronomia()">
+                            <option value="">-- Selecciona --</option>
+                            <option value="1">1. Naturaleza</option>
+                            <option value="2">2. Playas</option>
+                            <option value="3">3. Cultura</option>
+                            <option value="4">4. Gastronomía</option>
+                            <option value="5">5. Atractivos</option>
+                            <option value="6">6. Beach Clubs</option>
+                            <option value="7">7. Vida Nocturna</option>
+                            <option value="8">8. Náuticos</option>
+                            <option value="9">9. Hoteles</option>
+                            <option value="10">10. Iglesias</option>
+                        </select>
+
+                        <div id="bloque-subcategoria" style="display:none;">
+                            <label style="color:#d35400;">Tipo (Gastronomía)</label>
+                            <select id="subcategoria" onchange="agregarTipo()">
+                                <option value="">-- Selecciona --</option>
+                                <option value="Restaurante">Restaurante</option>
+                                <option value="Cafetería">Cafetería</option>
+                                <option value="Brunch">Brunch</option>
+                            </select>
+                        </div>
+
+                        <label>Descripción</label>
+                        <textarea id="descripcion" rows="3" required></textarea>
+
+                        <div class="seccion-foto">
+                            <span class="seccion-titulo">📸 Foto Principal (Portada)</span>
+                            <div class="upload-row">
+                                <input type="text" id="url-portada" placeholder="URL o subir ->" required oninput="actualizarPreview('portada')">
+                                <button type="button" class="btn-mini-upload" onclick="document.getElementById('file-portada').click()">
+                                    <i class="fas fa-folder-open"></i> Subir
+                                </button>
+                                <input type="file" id="file-portada" hidden accept="image/*" onchange="subirImagen('portada')">
+                            </div>
+                            <span id="status-portada" style="font-size:0.7rem; font-weight:bold; color:green;"></span>
+                            <img id="preview-portada" src="">
+                        </div>
+
+                        <div class="seccion-foto">
+                            <span class="seccion-titulo">🎞️ Galería</span>
+                            <div class="upload-row">
+                                <input type="text" id="url-galeria-temp" placeholder="URL y dale +">
+                                <button type="button" class="btn-mini-upload" style="background:#555;" onclick="agregarUrlManual()">+</button>
+                                <button type="button" class="btn-mini-upload" onclick="document.getElementById('file-galeria').click()">
+                                    <i class="fas fa-images"></i> Subir
+                                </button>
+                                <input type="file" id="file-galeria" hidden accept="image/*" onchange="subirImagen('galeria')">
+                            </div>
+                            <div id="gallery-grid" class="gallery-grid"></div>
+                        </div>
+
+                        <label>📍 Ubicación (Toca el mapa)</label>
+                        <div id="mapa-selector"></div>
+                        <div style="display:flex; gap:10px; margin-top:5px;">
+                            <input type="number" step="any" id="lat" placeholder="Lat" required readonly class="coord-box">
+                            <input type="number" step="any" id="lng" placeholder="Lng" required readonly class="coord-box">
+                        </div>
+
+                        <button type="submit" id="btn-submit" class="btn-submit">GUARDAR LUGAR</button>
+                        <button type="button" id="btn-cancel" class="btn-cancel" onclick="cancelarEdicion()">CANCELAR</button>
+                    </form>
+                </div>
+
+                <div class="form-card" id="form-categorias">
+                    <h3 class="form-title" style="color:var(--guinda);"><i class="fas fa-tags"></i> Crear Categoría</h3>
+                    <div class="design-info">
+                        Escribe el nombre de la nueva categoría. El sistema asignará el número automáticamente para evitar errores.
+                    </div>
+                    <form onsubmit="crearCategoriaManual(event)">
+                        <label>Nombre de la Categoría</label>
+                        <input type="text" id="cat-name-manual" placeholder="Ej: Zonas Arqueológicas" required>
+                        
+                        <button type="submit" class="btn-submit">CREAR CATEGORÍA</button>
+                    </form>
+                </div>
+
+                <div class="form-card" id="form-diseno">
+                    <h3 class="form-title" style="color:var(--dorado);"><i class="fas fa-paint-brush"></i> Cambiar Imágenes Web</h3>
+                    <div class="design-info">
+                        <strong>¡Fácil!</strong> Selecciona qué parte de la página quieres cambiar y sube la nueva foto.
+                    </div>
+
+                    <form onsubmit="procesarDiseno(event)">
+                        <label>¿Qué quieres cambiar?</label>
+                        <select id="design-target" required style="padding:15px; font-size:1rem; font-weight:700; border:2px solid var(--guinda);">
+                            <option value="">-- Selecciona Sección --</option>
+                            <option value="BANNER_HOME">🖼️ SLIDER PRINCIPAL (Portada)</option>
+                            <option value="CAT_1">🌿 Cat: Naturaleza</option>
+                            <option value="CAT_2">🏖️ Cat: Playas</option>
+                            <option value="CAT_3">🏛️ Cat: Cultura</option>
+                            <option value="CAT_4">🍽️ Cat: Gastronomía</option>
+                            <option value="CAT_5">📸 Cat: Atractivos</option>
+                            <option value="CAT_6">🍹 Cat: Beach Clubs</option>
+                            <option value="CAT_7">🎉 Cat: Vida Nocturna</option>
+                            <option value="CAT_8">⚓ Cat: Náuticos</option>
+                            <option value="CAT_9">🏨 Cat: Hoteles</option>
+                            <option value="CAT_10">⛪ Cat: Iglesias</option>
+                        </select>
+
+                        <div class="seccion-foto" style="margin-top:20px; border-color:var(--dorado); background:#fffbf0;">
+                            <span class="seccion-titulo" style="color:var(--dorado);">📸 Nueva Imagen</span>
+                            <div class="upload-row">
+                                <input type="text" id="url-design" placeholder="URL o subir ->" required>
+                                <button type="button" class="btn-mini-upload" style="background:var(--dorado);" onclick="document.getElementById('file-design').click()">
+                                    <i class="fas fa-cloud-upload-alt"></i> Subir
+                                </button>
+                                <input type="file" id="file-design" hidden accept="image/*" onchange="subirImagen('design')">
+                            </div>
+                            <span id="status-design" style="font-size:0.8rem; font-weight:bold; color:green;"></span>
+                        </div>
+
+                        <button type="submit" class="btn-submit" style="background-color:var(--dorado);">ACTUALIZAR FOTO</button>
+                    </form>
+                </div>
+
+                <div class="form-card" id="form-usuarios">
+                    <h3 class="form-title" style="color: #2c3e50;"><i class="fas fa-users-cog"></i> GESTIÓN DE ACCESOS</h3>
+                    
+                    <div class="design-info" style="background: #f3f4f6; color: #374151; border-color: #d1d5db; margin-bottom: 25px;">
+                        Crea cuentas para otros trabajadores del Ayuntamiento que necesiten acceso al Panel de Administración.
+                        <br>
+                        <strong style="color:var(--guinda);">Nota:</strong> Solo tú tienes permiso para ver esta sección.
+                    </div>
+
+                    <form onsubmit="crearNuevoUsuario(event)" style="margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #eee;">
+                        <label>CORREO INSTITUCIONAL O USUARIO</label>
+                        <input type="email" id="nuevo-email" placeholder="ejemplo@acapulco.gob.mx" required>
+                        
+                        <label>CONTRASEÑA PARA ESTA CUENTA</label>
+                        <input type="password" id="nuevo-password" placeholder="Mínimo 6 caracteres" required minlength="6">
+                        
+                        <button type="submit" class="btn-submit" style="background-color: var(--guinda); margin-top: 25px; font-weight: 700;">REGISTRAR USUARIO</button>
+                    </form>
+
+                    <h4 class="form-subtitle" style="color:var(--guinda); margin-top: 20px; font-weight: 700; text-transform: uppercase; border-bottom: 2px solid #ddd; padding-bottom: 8px; margin-bottom: 15px;"><i class="fas fa-users"></i> Usuarios Registrados</h4>
+                    
+                    <div id="lista-cuentas-admin" style="background: #fafafa; padding: 15px; border-radius: 8px; border: 1px solid #ddd; max-height: 250px; overflow-y: auto;">
+                        <p style="text-align:center; color:#999; font-size:0.8rem;">Cargando usuarios reales de la base de datos...</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div>
+                <h3 style="color:#444;">Inventario Actual</h3>
+                <div class="filter-scroll" id="filter-bar"></div>
+                <div id="lista-lugares"><p style="text-align:center; padding:40px; color:#999;">Cargando...</p></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+</body>
+</html>
